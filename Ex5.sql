@@ -1,0 +1,26 @@
+CREATE DATABASE dbFlavia;
+
+USE dbFlavia;
+
+CREATE TABLE tbVenda (
+	notaFiscal INT PRIMARY KEY AUTO_INCREMENT,
+    dataValidade DATETIME NOT NULL
+);
+
+ALTER TABLE tbVenda ADD COLUMN preco DECIMAL(6, 2) NOT NULL;
+ALTER TABLE tbVenda ADD COLUMN qtd SMALLINT;
+
+ALTER TABLE tbVenda DROP COLUMN dataValidade;
+
+ALTER TABLE tbVenda ADD COLUMN dataVenda DATETIME;
+
+CREATE TABLE tbProduto (
+	codBarras NUMERIC(13) PRIMARY KEY,
+    nomeProd VARCHAR(50) NOT NULL
+);
+
+ALTER TABLE tbVenda ADD codBarras NUMERIC(13) NOT NULL;
+ALTER TABLE tbVenda ADD INDEX (codBarras);
+ALTER TABLE tbVenda ADD FOREIGN KEY (codBarras) REFERENCES tbProduto (codBarras);
+
+DESCRIBE tbVenda;

@@ -1,0 +1,25 @@
+USE dbescola;
+CREATE TABLE tbest(
+IdUf TINYINT PRIMARY KEY,
+NomeUfs CHAR(2) NOT NULL,
+NomeEstado VARCHAR(40) NOT NULL
+);
+
+ALTER TABLE tbendereco ADD CONSTRAINT Fk_IdUF_TbEndereco FOREIGN KEY (IdUf) REFERENCES tbest(IdUf);
+
+ALTER TABLE tbest DROP NomeEstado;
+
+RENAME TABLE tbest TO tbEstado;
+
+ALTER TABLE tbEstado RENAME COLUMN NomeUfs TO NomeUf;
+
+ALTER TABLE tbendereco ADD IdCid MEDIUMINT;
+
+CREATE TABLE tbcidade(
+IdCid MEDIUMINT PRIMARY KEY,
+NomeCidade VARCHAR(50) NOT NULL
+);
+
+ALTER TABLE tbcidade MODIFY NomeCidade VARCHAR(250) NOT NULL;
+
+ALTER TABLE tbendereco ADD CONSTRAINT Fk_IdCid_tbcidade FOREIGN KEY(IdCid) REFERENCES tbcidade(IdCid);
