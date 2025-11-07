@@ -54,9 +54,7 @@ CREATE TABLE tbProduto (
 	codBarras NUMERIC(14) PRIMARY KEY,
     nome VARCHAR(200) NOT NULL,
     valor DECIMAL(7, 2) NOT NULL,
-	qtd SMALLINT,
-    codigo INT,
-    FOREIGN KEY (codigo) REFERENCES tbFornecedor(codigo)
+	qtd SMALLINT
 );
 CREATE TABLE tbCompra (
 	notaFiscal INT PRIMARY KEY,
@@ -113,182 +111,327 @@ VALUES
     
 DESCRIBE tbCidade;
 DELIMITER $$
-CREATE PROCEDURE inserirCidades()
+CREATE PROCEDURE inserirCidade(IN nomeCidade VARCHAR(200))
 BEGIN
-    INSERT INTO tbCidade (cidade) VALUES 
-        ('Rio de Janeiro'),
-        ('São Carlos'),
-        ('Campinas'),
-        ('Franco da Rocha'),
-        ('Osasco'),
-        ('Pirituba'),
-        ('Lapa'),
-        ('Ponta Grossa');
+    INSERT INTO tbCidade (cidade) VALUES (nomeCidade);
 END $$
 DELIMITER ;
-CALL inserirCidades();
+CALL inserirCidade('Rio de Janeiro');
+CALL inserirCidade('São Carlos');
+CALL inserirCidade('Campinas');
+CALL inserirCidade('Franco da Rocha');
+CALL inserirCidade('Osasco');
+CALL inserirCidade('Pirituba');
+CALL inserirCidade('Lapa');
+CALL inserirCidade('Ponta Grossa');
 
 DESCRIBE tbEstado;
 DELIMITER $$
-CREATE PROCEDURE inserirEstados()
+CREATE PROCEDURE inserirEstado(IN estado CHAR(2))
 BEGIN
-	INSERT INTO tbEstado (uf) VALUES
-		("SP"),
-		("RJ"),
-		("RS");
+	INSERT INTO tbEstado (uf) VALUES (estado);
 END $$
 DELIMITER ;
-CALL inserirEstados();
+CALL inserirEstado("SP");
+CALL inserirEstado("RJ");
+CALL inserirEstado("RS");
 
 DESCRIBE tbBairro;
 DELIMITER $$
-CREATE PROCEDURE inserirBairros()
+CREATE PROCEDURE inserirBairro(IN nomeBairro VARCHAR(200))
 BEGIN
-	INSERT INTO tbBairro (bairro) VALUES
-		("Aclimação"),
-		("Capão Redondo"),
-		("Pirituba"),
-        ("Liberdade");
+	INSERT INTO tbBairro (bairro) VALUES (nomeBairro);
 END $$
 DELIMITER ;
-CALL inserirBairros();
+CALL inserirBairro("Aclimação");
+CALL inserirBairro("Capão Redondo");
+CALL inserirBairro("Pirituba");
+CALL inserirBairro("Liberdade");
 
 DESCRIBE tbProduto;
 DELIMITER $$
-CREATE PROCEDURE inserirProdutos()
+CREATE PROCEDURE inserirProduto(
+	IN _codBarras NUMERIC(14),
+    IN _nome VARCHAR(200),
+    IN _valor DECIMAL(7, 2),
+    IN _qtd SMALLINT
+)
 BEGIN
 	INSERT INTO tbProduto (codBarras, nome, valor, qtd) VALUES
-		(12345678910111, "Rei de Papel Mache", 54.61, 120),
-        (12345678910112, "Bolinha de Sabão", 100.45, 120),
-        (12345678910113, "Carro Bate", 44.00, 120),
-        (12345678910114, "Bola Furada", 10.00, 120),
-        (12345678910115, "Maçã Laranja", 99.44, 120),
-        (12345678910116, "Boneco do Hitler", 124.00, 200),
-        (12345678910117, "Farinha de Suruí", 50.00, 200),
-        (12345678910118, "Zelador de Cemitério", 24.50, 100);
+		(_codBarras, _nome, _valor, _qtd);
 END $$
 DELIMITER ;
-CALL inserirProdutos();
+CALL inserirProduto(12345678910111, "Rei de Papel Mache", 54.61, 120);
+CALL inserirProduto(12345678910112, "Bolinha de Sabão", 100.45, 120);
+CALL inserirProduto(12345678910113, "Carro Bate", 44.00, 120);
+CALL inserirProduto(12345678910114, "Bola Furada", 10.00, 120);
+CALL inserirProduto(12345678910115, "Maçã Laranja", 99.44, 120);
+CALL inserirProduto(12345678910116, "Boneco do Hitler", 124.00, 200);
+CALL inserirProduto(12345678910117, "Farinha de Suruí", 50.00, 200);
+CALL inserirProduto(12345678910118, "Zelador de Cemitério", 24.50, 100);
 
 DESCRIBE tbEndereco;
 SELECT * FROM tbBairro;
 SELECT * FROM tbCidade;
 SELECT * FROM tbEstado;
-INSERT INTO tbBairro (bairro) VALUES
-	("Lapa"),
-    ("Consolação"),
-    ("Penha"),
-    ("Barra Funda");
-INSERT INTO tbCidade (cidade) VALUES
-	("São Paulo"),
-    ("Barra Mansa");
+CALL inserirBairro("Lapa");
+CALL inserirBairro("Consolação");
+CALL inserirBairro("Penha");
+CALL inserirBairro("Barra Funda");
+CALL inserirCidade("São Paulo");
+CALL inserirCidade("Barra Mansa");
 DELIMITER $$
-CREATE PROCEDURE inserirEnderecos()
+CREATE PROCEDURE inserirEndereco(
+	IN _cep NUMERIC(8),
+    IN _logradouro VARCHAR(200),
+	IN _bairro INT,
+    IN _cidade INT,
+    IN _uf INT
+)
 BEGIN
 	INSERT INTO tbEndereco (cep, logradouro, bairroId, cidadeId, ufId) VALUES
-		(12345050, "Rua da Federal", 5, 9, 1),
-        (12345051, "Av. Brasil", 5, 3, 1),
-        (12345052, "Rua Liberdade", 6, 9, 1),
-        (12345053, "Av. Paulista", 7, 1, 2),
-        (12345054, "Rua Ximbú", 7, 1, 2),
-        (12345055, "Rua Piu XI", 7, 3, 1),
-        (12345056, "Rua Chocolate", 1, 10, 2),
-        (12345057, "Rua Pão na Chapa", 8, 8, 3);
+		(_cep, _logradouro, _bairro, _cidade, _uf);
 END $$
 DELIMITER ;
-CALL inserirEnderecos();
+CALL inserirEndereco(12345050, "Rua da Federal", 5, 9, 1);
+CALL inserirEndereco(12345051, "Av. Brasil", 5, 3, 1);
+CALL inserirEndereco(12345052, "Rua Liberdade", 6, 9, 1);
+CALL inserirEndereco(12345053, "Av. Paulista", 7, 1, 2);
+CALL inserirEndereco(12345054, "Rua Ximbú", 7, 1, 2);
+CALL inserirEndereco(12345055, "Rua Piu XI", 7, 3, 1);
+CALL inserirEndereco(12345056, "Rua Chocolate", 1, 10, 2);
+CALL inserirEndereco(12345057, "Rua Pão na Chapa", 8, 8, 3);
 
 DESCRIBE tbCliente;
 DESCRIBE tbClientePF;
 SELECT * FROM tbEndereco;
-INSERT INTO tbBairro (bairro) VALUE ("Jardim Santa Isabel");
-INSERT INTO tbCidade (cidade) VALUE ("Cuiabá");
-INSERT INTO tbEstado (uf) VALUE ("MT");
-INSERT INTO tbEndereco (cep, logradouro, bairroId, cidadeId, ufId) VALUES
-	(12345058, "Rua Veia", 9, 9, 4),
-	(12345059, "Av Nova", 9, 9, 4);
+CALL inserirBairro("Jardim Santa Isabel");
+CALL inserirCidade("Cuiabá");
+CALL inserirEstado("MT");
+CALL inserirEndereco(12345058, "Rua Veia", 9, 9, 4);
+CALL inserirEndereco(12345059, "Av Nova", 9, 9, 4);
 DELIMITER $$
-CREATE PROCEDURE inserirClientesPF()
+CREATE PROCEDURE inserirClientePF(
+	IN _nomeCli VARCHAR(200),
+    IN _numEnd NUMERIC(6),
+    IN _compEnd VARCHAR(50),
+    IN _cepCli NUMERIC(8),
+    IN _cpf NUMERIC(11),
+    IN _rg NUMERIC(9),
+    IN _rgDig CHAR(1),
+    IN _nasc DATE
+)
 BEGIN
+	DECLARE _id INT;
 	INSERT INTO tbCliente (nomeCli, numEnd, compEnd, cepCli) VALUES
-		("Pimpão", 325, Null, 12345051),
-        ("Disney Chaplin", 89, "Ap. 12", 12345053),
-        ("Marciano", 744, Null, 12345054),
-        ("Lança Perfume", 128, Null, 12345059),
-        ("Remédio Amargo", 2585, Null, 12345058);
+		(_nomeCli, _numEnd, _compEnd, _cepCli);
+	SELECT id INTO _id
+    FROM tbCliente
+    WHERE nomeCli = _nomeCli;
 	INSERT INTO tbClientePF (cpf, rg, rgDig, nasc, id) VALUES
-		(12345678911, 12345678, "0", "2000-10-12", 1),
-        (12345678912, 12345679, "0", "2001-11-21", 2),
-        (12345678913, 12345680, "0", "2001-06-01", 3),
-        (12345678914, 12345681, "X", "2004-04-05", 4),
-        (12345678915, 12345682, "0", "2002-07-15", 5);
+		(_cpf, _rg, _rgDig, _nasc, _id);
 END $$
 DELIMITER ;
-CALL inserirClientesPF();
+CALL inserirClientePF("Pimpão", 325, Null, 12345051, 12345678911, 12345678, "0", "2000-10-12");
+CALL inserirClientePF("Disney Chaplin", 89, "Ap. 12", 12345053, 12345678912, 12345679, "0", "2001-11-21");
+CALL inserirClientePF("Marciano", 744, Null, 12345054, 12345678913, 12345680, "0", "2001-06-01");
+CALL inserirClientePF("Lança Perfume", 128, Null, 12345059, 12345678914, 12345681, "X", "2004-04-05");
+CALL inserirClientePF("Remédio Amargo", 2585, Null, 12345058, 12345678915, 12345682, "0", "2002-07-15");
 
 DESCRIBE tbCliente;
 DESCRIBE tbClientePJ;
 SELECT * FROM tbEndereco;
-INSERT INTO tbBairro (bairro) VALUE ("Sei Lá");
-INSERT INTO tbCidade (cidade) VALUE ("Recife");
-INSERT INTO tbEstado (uf) VALUE ("PE");
-INSERT INTO tbEndereco (cep, logradouro, bairroId, cidadeId, ufId) VALUE (12345060, "Rua dos Amores", 10, 12, 5);
+INSERT INTO tbBairro (bairro) VALUES ("Sei Lá");
+INSERT INTO tbCidade (cidade) VALUES ("Recife");
+INSERT INTO tbEstado (uf) VALUES ("PE");
+INSERT INTO tbEndereco (cep, logradouro, bairroId, cidadeId, ufId) VALUES (12345060, "Rua dos Amores", 10, 12, 5);
 DELIMITER $$
-CREATE PROCEDURE inserirClientesPJ()
+CREATE PROCEDURE inserirClientePJ(
+	IN _nomeCli VARCHAR(200),
+    IN _numEnd NUMERIC(6),
+    IN _compEnd VARCHAR(50),
+    IN _cepCli NUMERIC(8),
+    IN _cnpj NUMERIC(14),
+    IN _ie NUMERIC(11)
+)
 BEGIN
+	DECLARE _id INT;
 	INSERT INTO tbCliente (nomeCli, numEnd, compEnd, cepCli) VALUES
-		("Paganada", 159, Null, 12345051),
-        ("Disney Chaplin", 69, Null, 12345053),
-        ("Marciano", 189, Null, 12345060),
-        ("Lança Perfume", 5024, "Sala 23", 12345060),
-        ("Remédio Amargo", 1254, Null, 12345060);
+		(_nomeCli, _numEnd, _compEnd, _cepCli);
+	SELECT id INTO _id
+    FROM tbCliente
+    WHERE nomeCli = _nomeCli;
 	INSERT INTO tbClientePJ (cnpj, ie, id) VALUES
-		(12345678912345, 98765432198, 6),
-        (12345678912346, 98765432199, 7),
-        (12345678912347, 98765432100, 8),
-        (12345678912348, 98765432101, 9),
-        (12345678912349, 98765432102, 10);
+		(_cnpj, _ie, _id);
 END $$
 DELIMITER ;
-CALL inserirClientesPJ();
+CALL inserirClientePJ("Paganada", 159, Null, 12345051, 12345678912345, 98765432198);
+CALL inserirClientePJ("Caloteando", 69, Null, 12345053, 12345678912346, 98765432199);
+CALL inserirClientePJ("Semgrana", 189, Null, 12345060, 12345678912347, 98765432100);
+CALL inserirClientePJ("Cemreais", 5024, "Sala 23", 12345060, 12345678912348, 98765432101);
+CALL inserirClientePJ("Durango", 1254, Null, 12345060, 12345678912349, 98765432102);
 
 DESCRIBE tbCompra;
 DESCRIBE tbItemCompra;
 SELECT * FROM tbFornecedor;
 SELECT * FROM tbProduto;
 DELIMITER $$
-CREATE PROCEDURE inserirCompras()
+CREATE PROCEDURE inserirCompra(
+	IN _notaFiscal INT,
+    IN _dataCompra CHAR(10),
+    IN _valorTotal DECIMAL(7, 2),
+    IN _qtdTotal SMALLINT,
+    IN _fornecedor INT,
+    IN _qtd SMALLINT,
+    IN _valorItem DECIMAL(7, 2),
+    IN _codBarras NUMERIC(14)
+)
 BEGIN
-	INSERT INTO tbCompra (notaFiscal, dataCompra, valorTotal, qtdTotal, codigo) VALUES
-		(8459, STR_TO_DATE("01/05/2018", "%d/%m/%Y"), 21944.00, 700, 5),
-		(2482, STR_TO_DATE("22/04/2020", "%d/%m/%Y"), 7290.00, 180, 1),
-		(21563, STR_TO_DATE("12/07/2020", "%d/%m/%Y"), 900.00, 300, 6),
-		(156354, STR_TO_DATE("23/11/2021", "%d/%m/%Y"), 18900.00, 350, 1);
+	DECLARE procurarNf INT;
+    SELECT notaFiscal INTO procurarNf
+    FROM tbCompra WHERE notaFiscal = _notaFiscal;
+    IF procurarNf IS NULL THEN
+		INSERT INTO tbCompra (notaFiscal, dataCompra, valorTotal, qtdTotal, codigo) VALUES
+			(_notaFiscal, STR_TO_DATE(_dataCompra, "%d/%m/%Y"), _valorTotal, _qtdTotal, _fornecedor);
+	END IF;
 	INSERT INTO tbItemCompra (qtd, valorItem, notaFiscal, codBarras) VALUES
-		(200, 22.22, 8459, 12345678910111),
-        (180, 40.50, 2482, 12345678910112),
-        (300, 3.00, 21563, 12345678910113),
-        (500, 35.00, 8459, 12345678910114),
-        (350, 54.00, 156354, 12345678910115);
+		(_qtd, _valorItem, _notaFiscal, _codBarras);
 END $$
 DELIMITER ;
-CALL inserirCompras();
+CALL inserirCompra(8459, "01/05/2018", 21944.00, 700, 5, 200, 22.22, 12345678910111);
+CALL inserirCompra(2482, "22/04/2020", 7290.00, 180, 1, 180, 40.50, 12345678910112);
+CALL inserirCompra(21563, "12/07/2020", 900.00, 300, 6, 300, 3.00, 12345678910113);
+CALL inserirCompra(156354, "23/11/2021", 18900.00, 350, 1, 500, 35.00, 12345678910114);
+CALL inserirCompra(8459, Null, Null, Null, Null, 350, 54.00, 12345678910115);
 
 DESCRIBE tbVenda;
 DESCRIBE tbItemVenda;
 SELECT * FROM tbCliente;
 SELECT * FROM tbProduto;
 DELIMITER $$
-CREATE PROCEDURE inserirVendas()
+CREATE PROCEDURE inserirVenda(
+	IN _numVenda INT,
+    IN _totalVenda DECIMAL(7, 2),
+    IN _idCli INT,
+    IN _codBarras NUMERIC(14),
+    IN _valorItem DECIMAL(7, 2),
+    IN _qtd SMALLINT
+)
 BEGIN
 	INSERT INTO tbVenda (numeroVenda, dataVenda, totalVenda, idCli) VALUES
-		(1, NOW(), 54.61, 1),
-        (2, NOW(), 200.90, 4),
-        (3, NOW(), 44.00, 1);
+		(_numVenda, NOW(), _totalVenda, _idCli);
 	INSERT INTO tbItemVenda (numeroVenda, codBarras, valorItem, qtd) VALUES
-		(1, 12345678910111, 54.61, 1),
-        (2, 12345678910112, 100.45, 2),
-        (3, 12345678910113, 44.00, 1);
+		(_numVenda, _codBarras, _valorItem, _qtd);
 END $$
 DELIMITER ;
-CALL inserirVendas();
+CALL inserirVenda(1, 54.61, 1, 12345678910111, 54.61, 1);
+CALL inserirVenda(2, 200.90, 4, 12345678910112, 100.45, 2);
+CALL inserirVenda(3, 44.00, 1, 12345678910113, 44.00, 1);
+
+DESCRIBE tbNotaFiscal;
+DESCRIBE tbCliente;
+DESCRIBE tbVenda;
+DELIMITER $$
+CREATE PROCEDURE emitirNota(
+	IN codNota INT,
+    IN nomeCliente VARCHAR(200)
+)
+BEGIN
+	DECLARE idCliente INT;
+    DECLARE valorNota DECIMAL(7, 2);
+    SELECT id INTO idCliente
+    FROM tbcliente
+    WHERE nomeCli = nomeCliente;
+    IF idCliente IS NOT NULL THEN
+		SELECT SUM(totalVenda) INTO valorNota FROM tbVenda
+        WHERE idCli = idCliente;
+        IF valorNota IS NOT NULL THEN
+			INSERT INTO tbNotaFiscal (nf, totalNota, dataEmissao) VALUES (codNota, valorNota, NOW());
+            UPDATE tbVenda SET nf = codNota
+            WHERE idCli = idCliente;
+		END IF;
+    END IF ;
+END $$
+DELIMITER ;
+CALL emitirNota(359, "Pimpão");
+CALL emitirNota(360, "Lança Perfume");
+
+DESCRIBE tbProduto;
+CALL inserirProduto(12345678910130, "Camisa de Poliéster", 35.61, 100);
+CALL inserirProduto(12345678910131, "Blusa Frio Moletom", 200.00, 100);
+CALL inserirProduto(12345678910132, "Vestido Decote Redondo", 144.00, 50);
+
+SELECT * FROM tbProduto;
+DELETE FROM tbProduto WHERE codBarras = 12345678910116;
+DELETE FROM tbProduto WHERE codBarras = 12345678910117;
+
+DESCRIBE tbProduto;
+DELIMITER $$
+CREATE PROCEDURE atualizarProdutos(
+	IN novoValor DECIMAL(7, 2),
+    IN codItem NUMERIC(14)
+)
+BEGIN
+	UPDATE tbProduto SET valor = novoValor
+    WHERE codBarras = codItem;
+END $$
+DELIMITER ;
+CALL atualizarProdutos(64.50, 12345678910111);
+CALL atualizarProdutos(120.00, 12345678910112);
+CALL atualizarProdutos(64.00, 12345678910113);
+
+DELIMITER $$
+CREATE PROCEDURE mostrarProdutos()
+BEGIN
+	SELECT * FROM tbProduto;
+END $$
+DELIMITER ;
+CALL mostrarProdutos;
+
+CREATE TABLE tbProdutoHistorico LIKE tbProduto;
+ALTER TABLE tbProdutoHistorico ADD ocorrencia VARCHAR(20);
+ALTER TABLE tbProdutoHistorico ADD atualizacao DATETIME;
+ALTER TABLE tbProdutoHistorico DROP PRIMARY KEY;
+ALTER TABLE tbProdutoHistorico ADD PRIMARY KEY (codBarras, ocorrencia, atualizacao);
+
+DESCRIBE tbProdutoHistorico;
+DELIMITER $$
+CREATE TRIGGER novoHistorico
+AFTER INSERT ON tbProduto FOR EACH ROW
+BEGIN
+	INSERT INTO tbProdutoHistorico (codBarras, nome, valor, qtd, ocorrencia, atualizacao) VALUES
+		(NEW.codBarras, NEW.nome, NEW.valor, NEW.qtd, "Novo", NOW());
+END $$
+DELIMITER ;
+INSERT INTO tbProduto (codBarras, nome, valor, qtd) VALUES
+	(12345678910119, "Água Mineral", 1.99, 500);
+SELECT * FROM tbProdutoHistorico;
+
+DELIMITER $$
+CREATE TRIGGER atualizarHistorico
+AFTER UPDATE ON tbProduto FOR EACH ROW
+BEGIN
+	INSERT INTO tbProdutoHistorico (codBarras, nome, valor, qtd, ocorrencia, atualizacao) VALUES
+		(NEW.codBarras, NEW.nome, NEW.valor, NEW.qtd, "Atualizado", NOW());
+END $$
+DELIMITER ;
+UPDATE tbProduto SET valor = 2.99
+WHERE nome = "Água Mineral";
+SELECT * FROM tbProdutoHistorico;
+
+SELECT * FROM tbProduto;
+
+SELECT * FROM tbCliente;
+CALL inserirVenda(4, 64.50, 2, 12345678910111, 64.50, 1);
+
+SELECT * FROM tbVenda ORDER BY numeroVenda DESC LIMIT 1;
+
+SELECT * FROM tbItemVenda ORDER BY numeroVenda DESC, codBarras DESC LIMIT 1;
+
+DELIMITER  $$
+CREATE PROCEDURE pesquisarCliente(IN nome VARCHAR(200))
+BEGIN
+	SELECT * FROM tbCliente WHERE nomeCli = nome;
+END $$
+DELIMITER ;
+CALL pesquisarCliente("Disney Chaplin");
