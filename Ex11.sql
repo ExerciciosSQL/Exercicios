@@ -304,6 +304,7 @@ CALL inserirCompra(21563, "12/07/2020", 900.00, 300, 6, 300, 3.00, 1234567891011
 CALL inserirCompra(156354, "23/11/2021", 18900.00, 350, 1, 500, 35.00, 12345678910114);
 CALL inserirCompra(8459, Null, Null, Null, Null, 350, 54.00, 12345678910115);
 
+DESCRIBE tbProduto;
 DESCRIBE tbVenda;
 DESCRIBE tbItemVenda;
 SELECT * FROM tbCliente;
@@ -311,22 +312,24 @@ SELECT * FROM tbProduto;
 DELIMITER $$
 CREATE PROCEDURE inserirVenda(
 	IN _numVenda INT,
-    IN _totalVenda DECIMAL(7, 2),
     IN _idCli INT,
     IN _codBarras NUMERIC(14),
-    IN _valorItem DECIMAL(7, 2),
     IN _qtd SMALLINT
 )
 BEGIN
+	DECLARE valorItem DECIMAL(7, 2);
+	SELECT valor INTO valorItem
+    FROM tbProduto
+    WHERE codBarras = _codBarras;
 	INSERT INTO tbVenda (numeroVenda, dataVenda, totalVenda, idCli) VALUES
-		(_numVenda, NOW(), _totalVenda, _idCli);
+		(_numVenda, NOW(), valorItem * _qtd, _idCli);
 	INSERT INTO tbItemVenda (numeroVenda, codBarras, valorItem, qtd) VALUES
-		(_numVenda, _codBarras, _valorItem, _qtd);
+		(_numVenda, _codBarras, valorItem, _qtd);
 END $$
 DELIMITER ;
-CALL inserirVenda(1, 54.61, 1, 12345678910111, 54.61, 1);
-CALL inserirVenda(2, 200.90, 4, 12345678910112, 100.45, 2);
-CALL inserirVenda(3, 44.00, 1, 12345678910113, 44.00, 1);
+CALL inserirVenda(1, 1, 12345678910111, 1);
+CALL inserirVenda(2, 4, 12345678910112, 2);
+CALL inserirVenda(3, 1, 12345678910113, 1);
 
 DESCRIBE tbNotaFiscal;
 DESCRIBE tbCliente;
@@ -422,7 +425,7 @@ SELECT * FROM tbProdutoHistorico;
 SELECT * FROM tbProduto;
 
 SELECT * FROM tbCliente;
-CALL inserirVenda(4, 64.50, 2, 12345678910111, 64.50, 1);
+CALL inserirVenda(4, 2, 12345678910111, 1);
 
 SELECT * FROM tbVenda ORDER BY numeroVenda DESC LIMIT 1;
 
@@ -435,3 +438,65 @@ BEGIN
 END $$
 DELIMITER ;
 CALL pesquisarCliente("Disney Chaplin");
+
+DESCRIBE tbItemVenda;
+DESCRIBE tbProduto;
+DELIMITER $$
+CREATE TRIGGER atualizarQtdeVenda
+BEFORE INSERT ON tbItemVenda FOR EACH ROW
+BEGIN
+	DECLARE qtd_atual SMALLINT;
+    SELECT qtd INTO qtd_atual
+    FROM tbProduto
+    WHERE codBarras = NEW.codBarras;
+    IF qtd_atual >= NEW.qtd THEN
+		UPDATE tbProduto
+		SET qtd = qtd - NEW.qtd
+		WHERE codBarras = NEW.codBarras;
+	END IF;
+END $$
+DELIMITER ;
+
+CALL inserirVenda(5, 6, 12345678910114, 15);
+
+SELECT * FROM tbProduto;
+
+DESCRIBE tbCompra;
+DESCRIBE tbItemCompra;
+DELIMITER $$
+CREATE TRIGGER atualizarQtdeCompra
+BEFORE INSERT ON tbItemCompra FOR EACH ROW
+BEGIN
+	DECLARE qtd_atual SMALLINT;
+    SELECT qtd INTO qtd_atual
+    FROM tbProduto
+    WHERE codBarras = NEW.codBarras;
+    IF qtd_atual >= NEW.qtd THEN
+		UPDATE tbProduto
+		SET qtd = qtd + NEW.qtd
+		WHERE codBarras = NEW.codBarras;
+	END IF;
+END $$
+DELIMITER ;
+
+SELECT * FROM tbFornecedor;
+CALL inserirCompra(10548, "10/09/2022", 4000.00, 100, 5, 100, 40.00, 12345678910111);
+
+SELECT * FROM tbProduto;
+
+DESCRIBE tbCliente;
+DESCRIBE tbClientePF;
+SELECT * FROM tbCliente INNER JOIN tbClientePF
+WHERE tbCliente.id = tbClientePF.id;
+
+DESCRIBE tbClientePJ;
+SELECT * FROM tbCliente INNER JOIN tbClientePJ
+WHERE tbCliente.id = tbClientePJ.id;
+
+SELECT tbCliente.id, tbCliente.nomeCli, tbClientePJ.cnpj, tbClientePJ.ie, tbClientePJ.id
+FROM tbCliente INNER JOIN tbClientePJ
+WHERE tbCliente.id = tbClientePJ.id;
+
+SELECT tbCliente.id, tbCliente.nomeCli, tbClientePF.cpf, tbClientePF.RG, tbClientePF.nasc
+FROM tbCliente INNER JOIN tbClientePF
+WHERE tbCliente.id = tbClientePF.id;
